@@ -9,10 +9,23 @@ const (
 	UndirectedEdgeOp EdgeOp = "--"
 )
 
-// edge_stmt : (node_id | subgraph) edgeRHS [ attr_list ]
-type EdgeStmt struct {
+// edge_lhs : node_id | subgraph
+type EdgeLhs struct {
 	*NodeID
 	*SubGraph
+}
+
+func (e EdgeLhs) String() string {
+	return fmt.Sprintf(
+		"%s %s",
+		e.NodeID,
+		e.SubGraph,
+	)
+}
+
+// edge_stmt : edge_lhs edgeRHS [ attr_list ]
+type EdgeStmt struct {
+	EdgeLhs
 	EdgeRhs
 	*AttrList
 }
@@ -21,40 +34,33 @@ func (e EdgeStmt) IsStmt() {}
 
 func (e EdgeStmt) String() string {
 	return fmt.Sprintf(
-		"%v %v %v %v",
-		SprintPtr(e.NodeID),
-		SprintPtr(e.SubGraph),
+		"%v %v %v",
+		e.EdgeLhs,
 		e.EdgeRhs,
 		SprintPtr(e.AttrList),
 	)
 
 }
 
-// edgeRHS	:	edgeop (node_id | subgraph) [ edgeRHS ]
+// edgeRHS	:	edgeop edge_lhs [ edgeRHS ]
 type EdgeRhs struct {
 	EdgeOp
-	*NodeID
-	*SubGraph
+	EdgeLhs
 	*EdgeRhs
 }
 
 func (e EdgeRhs) String() string {
 	return fmt.Sprintf(
-		"%v %v %v %v",
+		"%v %v %v",
 		e.EdgeOp,
-		SprintPtr(e.NodeID),
-		SprintPtr(e.SubGraph),
+		e.EdgeLhs,
 		SprintPtr(e.EdgeRhs),
 	)
 }
 
-type NodeItem struct {
-	*NodeID
-	*SubGraph
-}
-
-type Edge struct {
-	Lhs NodeItem
-	Op  EdgeOp
-	Rhs NodeItem
+func NewEdgeLhs(nodeID *NodeID, subGraph *SubGraph) EdgeLhs {
+	return EdgeLhs{
+		NodeID:   nodeID,
+		SubGraph: subGraph,
+	}
 }

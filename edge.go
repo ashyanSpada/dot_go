@@ -47,3 +47,14 @@ func (e EdgeRhs) String() string {
 		SprintPtr(e.EdgeRhs),
 	)
 }
+
+type NodeItem struct {
+	*NodeID
+	*SubGraph
+}
+
+type Edge struct {
+	Lhs NodeItem
+	Op  EdgeOp
+	Rhs NodeItem
+}

@@ -42,6 +42,14 @@ func (e EdgeStmt) String() string {
 
 }
 
+func (e EdgeStmt) Link(op EdgeOp, next EdgeLhs) EdgeStmt {
+	e.EdgeRhs = EdgeRhs{
+		EdgeOp:  op,
+		EdgeLhs: next,
+	}
+	return e
+}
+
 // edgeRHS	:	edgeop edge_lhs [ edgeRHS ]
 type EdgeRhs struct {
 	EdgeOp
@@ -62,5 +70,15 @@ func NewEdgeLhs(nodeID *NodeID, subGraph *SubGraph) EdgeLhs {
 	return EdgeLhs{
 		NodeID:   nodeID,
 		SubGraph: subGraph,
+	}
+}
+
+func NewEdge(lhs EdgeLhs, op EdgeOp, rhs EdgeLhs) EdgeStmt {
+	return EdgeStmt{
+		EdgeLhs: lhs,
+		EdgeRhs: EdgeRhs{
+			EdgeOp:  op,
+			EdgeLhs: rhs,
+		},
 	}
 }
